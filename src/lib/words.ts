@@ -109,6 +109,7 @@ export const getWordOfDay = () => {
   const nextDay = new Date(today)
   nextDay.setDate(today.getDate() + 1)
   
+  console.log(hours)
 
   return {
     solution: localeAwareUpperCase(WORDS[index % WORDS.length + 1]),
