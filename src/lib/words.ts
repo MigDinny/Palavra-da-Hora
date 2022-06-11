@@ -88,32 +88,10 @@ export const getWordOfDay = () => {
     start.setDate(start.getDate() + 1)
   }
 
+  index *= hours
+
   let nextRefresh = new Date()
-
-
-  if (hours >= 12 && hours < 20) {
-    index *= 3 
-    nextRefresh.setHours(20, 0, 0)
-  } 
-
-  if (hours >= 4  && hours < 12) {
-    index *= 4
-    nextRefresh.setHours(12, 0, 0)
-  }
-  
-  if (hours >= 20) {
-    index *= 5
-    nextRefresh.setHours(4, 0, 0)
-    nextRefresh.setDate(nextRefresh.getDate() + 1)
-  } 
-  
-  if (hours < 4) {
-    index *= 5
-    nextRefresh.setHours(4, 0, 0)
-  } 
-
-  const nextDay = new Date(today)
-  nextDay.setDate(today.getDate() + 1)
+  nextRefresh.setHours(nextRefresh.getHours() + 1, 0, 0)
   
   return {
     solution: localeAwareUpperCase(WORDS[index % WORDS.length]),
