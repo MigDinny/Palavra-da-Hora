@@ -79,12 +79,18 @@ export const getWordOfDay = () => {
   const epoch = new Date(2022, 0)
   const start = new Date(epoch)
   const today = new Date()
+  const hours = today.getHours()
   today.setHours(0, 0, 0, 0)
+
   let index = 0
   while (start < today) {
     index++
     start.setDate(start.getDate() + 1)
   }
+
+  if (hours >= 12 && hours < 20) index *= 1
+  if (hours >= 4  && hours < 12) index *= 2
+  if (hours >= 20 && hours < 4)  index *= 3
 
   const nextDay = new Date(today)
   nextDay.setDate(today.getDate() + 1)
