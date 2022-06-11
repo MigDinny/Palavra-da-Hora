@@ -3,6 +3,7 @@ import { VALID_GUESSES } from '../constants/validGuesses'
 import { WRONG_SPOT_MESSAGE, NOT_CONTAINED_MESSAGE } from '../constants/strings'
 import { getGuessStatuses } from './statuses'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
+import { Console } from 'console'
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -90,6 +91,7 @@ export const getWordOfDay = () => {
 
   let nextRefresh = new Date()
 
+
   if (hours >= 12 && hours < 20) {
     index *= 2  
     nextRefresh.setHours(20, 0, 0)
@@ -100,14 +102,15 @@ export const getWordOfDay = () => {
     nextRefresh.setHours(12, 0, 0)
   }
   
-  if (hours >= 20 && hours < 4) {
-    index *= 5
+  if (hours >= 20 || hours < 4) {
+    index *= 4
     nextRefresh.setHours(4, 0, 0)
   } 
 
   const nextDay = new Date(today)
   nextDay.setDate(today.getDate() + 1)
-
+  
+  
   return {
     solution: localeAwareUpperCase(WORDS[index % WORDS.length]),
     solutionIndex: index,
