@@ -91,17 +91,17 @@ export const getWordOfDay = () => {
   let nextRefresh = new Date()
 
   if (hours >= 12 && hours < 20) {
-    index *= 1  
+    index *= 2  
     nextRefresh.setHours(20, 0, 0)
   } 
 
   if (hours >= 4  && hours < 12) {
-    index *= 2
+    index *= 3
     nextRefresh.setHours(12, 0, 0)
   }
   
   if (hours >= 20 && hours < 4) {
-    index *= 3
+    index *= 4
     nextRefresh.setHours(4, 0, 0)
   } 
 
