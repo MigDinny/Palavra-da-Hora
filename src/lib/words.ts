@@ -101,7 +101,7 @@ export const getWordOfDay = () => {
   }
   
   if (hours >= 20 && hours < 4) {
-    index *= 4
+    index *= 5
     nextRefresh.setHours(4, 0, 0)
   } 
 
