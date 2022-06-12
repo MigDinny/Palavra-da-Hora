@@ -94,7 +94,7 @@ export const getWordOfDay = () => {
   nextRefresh.setHours(nextRefresh.getHours() + 1, 0, 0)
   
   return {
-    solution: localeAwareUpperCase(WORDS[index % WORDS.length - 513]),
+    solution: localeAwareUpperCase(WORDS[index % WORDS.length - 8]),
     solutionIndex: index,
     tomorrow: nextRefresh.valueOf(),
   }
