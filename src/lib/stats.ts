@@ -55,3 +55,4 @@ const getSuccessRate = (gameStats: GameStats) => {
     (100 * (totalGames - gamesFailed)) / Math.max(totalGames, 1)
   )
 }
+

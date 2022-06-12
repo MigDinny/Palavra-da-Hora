@@ -5,6 +5,7 @@ import { getGuessStatuses } from './statuses'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
 export const isWordInWordList = (word: string) => {
+
   return (
     WORDS.includes(localeAwareLowerCase(word)) ||
     VALID_GUESSES.includes(localeAwareLowerCase(word))
@@ -94,9 +95,26 @@ export const getWordOfDay = () => {
   nextRefresh.setHours(nextRefresh.getHours() + 1, 0, 0)
   
   return {
-    solution: localeAwareUpperCase(WORDS[index % WORDS.length - 8]),
+    solution: localeAwareUpperCase(WORDS[index % WORDS.length]),
     solutionIndex: index,
     tomorrow: nextRefresh.valueOf(),
+  }
+}
+
+export const portugueseFix = (char: string) => {
+  switch (char) {
+    case 'À': return 'A'
+    case 'Â': return 'A'
+    case 'Ã': return 'A'
+    case 'Á': return 'A'
+    case 'Ó': return 'O'
+    case 'Ò': return 'O'
+    case 'Õ': return 'O'
+    case 'Ô': return 'O'
+    case 'É': return 'E'
+    case 'Í': return 'I'
+    case 'Ú': return 'U'
+    default: return char
   }
 }
 

@@ -1,4 +1,4 @@
-import { unicodeSplit } from './words'
+import { unicodeSplit, portugueseFix } from './words'
 
 export type CharStatus = 'absent' | 'present' | 'correct'
 
@@ -8,6 +8,10 @@ export const getStatuses = (
 ): { [key: string]: CharStatus } => {
   const charObj: { [key: string]: CharStatus } = {}
   const splitSolution = unicodeSplit(solution)
+
+  for (let i = 0; i < splitSolution.length; i++) {
+    splitSolution[i] = portugueseFix(splitSolution[i])
+  }
 
   guesses.forEach((word) => {
     unicodeSplit(word).forEach((letter, i) => {
@@ -41,6 +45,10 @@ export const getGuessStatuses = (
   const solutionCharsTaken = splitSolution.map((_) => false)
 
   const statuses: CharStatus[] = Array.from(Array(guess.length))
+
+  for (let i = 0; i < splitSolution.length; i++) {
+    splitSolution[i] = portugueseFix(splitSolution[i])
+  }
 
   // handle all correct cases first
   splitGuess.forEach((letter, i) => {
@@ -77,3 +85,4 @@ export const getGuessStatuses = (
 
   return statuses
 }
+
