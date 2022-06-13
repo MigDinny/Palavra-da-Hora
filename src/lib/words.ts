@@ -89,7 +89,7 @@ export const getWordOfDay = () => {
     start.setDate(start.getDate() + 1)
   }
 
-  index *= hours
+  index *= (hours+10)
 
   let nextRefresh = new Date()
   nextRefresh.setHours(nextRefresh.getHours() + 1, 0, 0)
