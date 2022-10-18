@@ -5,6 +5,14 @@ import { useCallback, useEffect, useState } from 'react'
 type Props = {
     isOpen: boolean
     handleClose: () => void
+    wordID: number
+}
+
+type Score = {
+    id: string
+    name: string
+    attempts: number
+    timestamp: string
 }
 
 const DUMMY_SCORES = [
@@ -17,11 +25,12 @@ const DUMMY_SCORES = [
 
 export const LeaderBoardModal = ({
     isOpen,
-    handleClose
+    handleClose,
+    wordID
 }: Props) => {
 
     // states
-    const [scores, setScores] = useState(DUMMY_SCORES);
+    const [scores, setScores] = useState<Score[]>([]);
     const {
         isLoading: isLeaderBoardLoading,
         error: requestLeaderBoardError,
@@ -40,9 +49,9 @@ export const LeaderBoardModal = ({
 
         // data arrives here
         const receiveCallback = (data: { [x: string]: any }) => {
-            console.log(data['150']);
+            console.log(data[wordID.toString()]);
 
-            let scores_temp = data['150'];
+            let scores_temp = data[wordID.toString()];
             let keys = Object.keys(scores_temp);
             let unordered_scores = [];
 
@@ -58,22 +67,32 @@ export const LeaderBoardModal = ({
         }
 
         await sendLeaderBoardRequest(reqConfig, receiveCallback);
-    }, [sendLeaderBoardRequest]);
+    }, [sendLeaderBoardRequest, wordID]);
 
     // componentDidMount
     useEffect(() => {
         updateLeaderBoard();
     }, [updateLeaderBoard]);
 
+    // component was opened
+    useEffect(() => {
+        isOpen && updateLeaderBoard();
+    }, [isOpen, updateLeaderBoard]);
+
     let position = 1;
 
     return (
         <BaseModal title="Leaderboard" isOpen={isOpen} handleClose={handleClose}>
             <div className="flex flex-col mt-2 divide-y text-gray-500 dark:text-gray-300">
+                {scores.length > 0 &&
+                    <ol>
+                        {scores.map((score) => <li key={score.id}>{position++}. {score.name} {score.attempts}/6 <span className="text-xs">{score.timestamp}</span></li>)}
+                    </ol>
+                }
 
-                <ol>
-                    {scores.map((score) => <li key={score.id}>{position++}. {score.name} {score.attempts}/6 <span className="text-xs">{score.timestamp}</span></li>)}
-                </ol>
+                {scores.length === 0 &&
+                    <span>Nobody scored. Be the first!</span>
+                }
 
             </div>
         </BaseModal>

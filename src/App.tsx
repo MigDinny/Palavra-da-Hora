@@ -323,6 +323,7 @@ function App() {
 				<LeaderBoardModal
 					isOpen={isLeaderBoardModalOpen}
 					handleClose={() => setIsLeaderBoardModalOpen(false)}
+					wordID={solutionIndex}
 				/>
 
 				<StatsModal
