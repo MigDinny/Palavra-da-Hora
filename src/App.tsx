@@ -4,6 +4,7 @@ import { Keyboard } from './components/keyboard/Keyboard'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
+import { LeaderBoardModal } from './components/modals/LeaderBoardModal'
 import {
 	WIN_MESSAGES,
 	GAME_COPIED_MESSAGE,
@@ -12,6 +13,7 @@ import {
 	CORRECT_WORD_MESSAGE,
 	HARD_MODE_ALERT_MESSAGE,
 	DISCOURAGE_INAPP_BROWSER_TEXT,
+	ERROR_SENDING_SCORE_TEXT
 } from './constants/strings'
 import {
 	MAX_CHALLENGES,
@@ -23,6 +25,7 @@ import {
 	isWordInWordList,
 	isWinningWord,
 	solution,
+	solutionIndex,
 	findFirstUnusedReveal,
 	unicodeLength,
 } from './lib/words'
@@ -40,6 +43,7 @@ import { AlertContainer } from './components/alerts/AlertContainer'
 import { useAlert } from './context/AlertContext'
 import { Navbar } from './components/navbar/Navbar'
 import { isInAppBrowser } from './lib/browser'
+import useHTTP from './hooks/use-http'
 
 function App() {
 	const prefersDarkMode = window.matchMedia(
@@ -53,6 +57,7 @@ function App() {
 	const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+	const [isLeaderBoardModalOpen, setIsLeaderBoardModalOpen] = useState(false)
 	const [currentRowClass, setCurrentRowClass] = useState('')
 	const [isGameLost, setIsGameLost] = useState(false)
 	const [isDarkMode, setIsDarkMode] = useState(
@@ -91,6 +96,38 @@ function App() {
 			? localStorage.getItem('gameMode') === 'hard'
 			: false
 	)
+
+	const {
+		isLoading: isSendScoreLoading,
+		error: sendScoreError,
+		sendRequest: sendScore
+	} = useHTTP();
+
+	const sendScoreToServer = (wordID: number, attempts: number, name: string) => {
+		let today = new Date()
+		let time = today.getHours() + ":" + (today.getMinutes() < 10 ? '0' : '') + today.getMinutes()
+
+		const reqConfig = {
+			url: 'https://palavra-da-hora-default-rtdb.europe-west1.firebasedatabase.app/scores/' + wordID + ".json",
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: {
+				"attempts": attempts.toString(),
+				"name": name,
+				"timestamp": time
+			}
+		};
+
+		sendScore(reqConfig, () => { });
+	}
+
+	useEffect(() => {
+		if (sendScoreError) {
+			showErrorAlert(ERROR_SENDING_SCORE_TEXT, {
+				persist: true
+			})
+		}
+	}, [sendScoreError, showErrorAlert]);
 
 	useEffect(() => {
 		// if no game state on load,
@@ -235,11 +272,13 @@ function App() {
 			setCurrentGuess('')
 
 			if (winningWord) {
+				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
 				setStats(addStatsForCompletedGame(stats, guesses.length))
 				return setIsGameWon(true)
 			}
 
 			if (guesses.length === MAX_CHALLENGES - 1) {
+				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
 				setStats(addStatsForCompletedGame(stats, guesses.length + 1))
 				setIsGameLost(true)
 				showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
@@ -256,6 +295,7 @@ function App() {
 				setIsInfoModalOpen={setIsInfoModalOpen}
 				setIsStatsModalOpen={setIsStatsModalOpen}
 				setIsSettingsModalOpen={setIsSettingsModalOpen}
+				setIsLeaderBoardModalOpen={setIsLeaderBoardModalOpen}
 			/>
 			<div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
 				<div className="pb-6 grow">
@@ -279,6 +319,13 @@ function App() {
 					isOpen={isInfoModalOpen}
 					handleClose={() => setIsInfoModalOpen(false)}
 				/>
+
+				<LeaderBoardModal
+					isOpen={isLeaderBoardModalOpen}
+					handleClose={() => setIsLeaderBoardModalOpen(false)}
+					wordID={solutionIndex}
+				/>
+
 				<StatsModal
 					isOpen={isStatsModalOpen}
 					handleClose={() => setIsStatsModalOpen(false)}
