@@ -4,6 +4,7 @@ import { Keyboard } from './components/keyboard/Keyboard'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
+import { LeaderBoardModal } from './components/modals/LeaderBoardModal'
 import {
 	WIN_MESSAGES,
 	GAME_COPIED_MESSAGE,
@@ -53,6 +54,7 @@ function App() {
 	const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+	const [isLeaderBoardModalOpen, setIsLeaderBoardModalOpen] = useState(false)
 	const [currentRowClass, setCurrentRowClass] = useState('')
 	const [isGameLost, setIsGameLost] = useState(false)
 	const [isDarkMode, setIsDarkMode] = useState(
@@ -256,6 +258,7 @@ function App() {
 				setIsInfoModalOpen={setIsInfoModalOpen}
 				setIsStatsModalOpen={setIsStatsModalOpen}
 				setIsSettingsModalOpen={setIsSettingsModalOpen}
+				setIsLeaderBoardModalOpen={setIsLeaderBoardModalOpen}
 			/>
 			<div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
 				<div className="pb-6 grow">
@@ -279,6 +282,12 @@ function App() {
 					isOpen={isInfoModalOpen}
 					handleClose={() => setIsInfoModalOpen(false)}
 				/>
+
+				<LeaderBoardModal
+					isOpen={isLeaderBoardModalOpen}
+					handleClose={() => setIsLeaderBoardModalOpen(false)}
+				/>
+
 				<StatsModal
 					isOpen={isStatsModalOpen}
 					handleClose={() => setIsStatsModalOpen(false)}
