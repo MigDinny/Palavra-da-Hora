@@ -288,13 +288,13 @@ function App() {
 			setCurrentGuess('')
 
 			if (winningWord) {
-				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
+				sendScoreToServer(solutionIndex, guesses.length + 1, name);
 				setStats(addStatsForCompletedGame(stats, guesses.length))
 				return setIsGameWon(true)
 			}
 
 			if (guesses.length === MAX_CHALLENGES - 1) {
-				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
+				sendScoreToServer(solutionIndex, guesses.length + 1, name);
 				setStats(addStatsForCompletedGame(stats, guesses.length + 1))
 				setIsGameLost(true)
 				showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
