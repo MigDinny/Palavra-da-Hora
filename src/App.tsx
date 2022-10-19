@@ -35,6 +35,8 @@ import {
 	saveGameStateToLocalStorage,
 	setStoredIsHighContrastMode,
 	getStoredIsHighContrastMode,
+	loadNameFromLocalStorage,
+	saveNameToLocalStorage
 } from './lib/localStorage'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
@@ -49,6 +51,8 @@ function App() {
 	const prefersDarkMode = window.matchMedia(
 		'(prefers-color-scheme: dark)'
 	).matches
+
+	const [name, setName] = useState(() => loadNameFromLocalStorage())
 
 	const { showError: showErrorAlert, showSuccess: showSuccessAlert } =
 		useAlert()
@@ -137,7 +141,19 @@ function App() {
 				setIsInfoModalOpen(true)
 			}, WELCOME_INFO_MODAL_MS)
 		}
-	})
+
+		// if no name on load, ask for name
+		if (!name || name.length < 3) {
+			let enteredName = prompt('What\'s your name?')
+
+			while (!enteredName || enteredName.length < 3) {
+				enteredName = prompt('What\'s your name? More than 3 characters.')
+			}
+
+			saveNameToLocalStorage(enteredName)
+			setName(enteredName)
+		}
+	}, [name])
 
 	useEffect(() => {
 		DISCOURAGE_INAPP_BROWSERS &&
@@ -272,13 +288,17 @@ function App() {
 			setCurrentGuess('')
 
 			if (winningWord) {
-				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
+
+				sendScoreToServer(solutionIndex, guesses.length + 1, name);
+
 				setStats(addStatsForCompletedGame(stats, guesses.length))
 				return setIsGameWon(true)
 			}
 
 			if (guesses.length === MAX_CHALLENGES - 1) {
-				sendScoreToServer(solutionIndex, guesses.length + 1, "Miguel");
+
+				sendScoreToServer(solutionIndex, guesses.length + 1, name);
+
 				setStats(addStatsForCompletedGame(stats, guesses.length + 1))
 				setIsGameLost(true)
 				showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
