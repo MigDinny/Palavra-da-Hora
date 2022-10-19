@@ -52,8 +52,8 @@ export const LeaderBoardModal = ({
             }
 
             //scores_temp.map((s: { "": any }) => {id: });
-
-            let ordered_scores = unordered_scores?.sort((a, b) => (a.attempts > b.attempts ? 1 : -1));
+            let timely_ordered_scores = unordered_scores.reverse();
+            let ordered_scores = timely_ordered_scores?.sort((a, b) => (a.attempts > b.attempts ? 1 : -1));
 
             setScores(ordered_scores);
         }
