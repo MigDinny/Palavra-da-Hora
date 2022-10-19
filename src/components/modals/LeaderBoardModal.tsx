@@ -15,14 +15,6 @@ type Score = {
     timestamp: string
 }
 
-const DUMMY_SCORES = [
-    { id: 's1', name: 'Guga', attempts: '4', timestamp: '23:09' },
-    { id: 's2', name: 'Miguel', attempts: '2', timestamp: '23:17' },
-    { id: 's3', name: 'Tatiana', attempts: '6', timestamp: '23:29' },
-    { id: 's4', name: 'Verónica', attempts: '7', timestamp: '23:54' },
-    { id: 's5', name: 'Catré', attempts: '1', timestamp: '23:20' }
-];
-
 export const LeaderBoardModal = ({
     isOpen,
     handleClose,
@@ -32,8 +24,8 @@ export const LeaderBoardModal = ({
     // states
     const [scores, setScores] = useState<Score[]>([]);
     const {
-        isLoading: isLeaderBoardLoading,
-        error: requestLeaderBoardError,
+        //isLoading: isLeaderBoardLoading,
+        //error: requestLeaderBoardError,
         sendRequest: sendLeaderBoardRequest
     } = useHTTP();
 
