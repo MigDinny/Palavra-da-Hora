@@ -102,7 +102,7 @@ function App() {
 	)
 
 	const {
-		isLoading: isSendScoreLoading,
+		//isLoading: isSendScoreLoading,
 		error: sendScoreError,
 		sendRequest: sendScore
 	} = useHTTP();
