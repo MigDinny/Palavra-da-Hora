@@ -1,5 +1,6 @@
 const gameStateKey = 'gameState'
 const highContrastKey = 'highContrast'
+const nameKey = 'name'
 
 type StoredGameState = {
   guesses: string[]
@@ -46,4 +47,14 @@ export const setStoredIsHighContrastMode = (isHighContrast: boolean) => {
 export const getStoredIsHighContrastMode = () => {
   const highContrast = localStorage.getItem(highContrastKey)
   return highContrast === '1'
+}
+
+export const loadNameFromLocalStorage = () => {
+  const name = localStorage.getItem(nameKey);
+
+  return name ? name : '';
+}
+
+export const saveNameToLocalStorage = (name : string) => {
+  localStorage.setItem(nameKey, name);
 }
