@@ -1,7 +1,6 @@
 import { BaseModal } from './BaseModal'
 import useHTTP from '../../hooks/use-http'
 import { useCallback, useEffect, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
 
 type Props = {
     isOpen: boolean
@@ -70,7 +69,7 @@ export const MonthlyLeaderBoardModal = ({
 
     // component was opened
     useEffect(() => {
-        isOpen && updateMonthlyLeaderBoard();
+        if (isOpen) updateMonthlyLeaderBoard();
     }, [isOpen, updateMonthlyLeaderBoard]);
 
     let position = 1;

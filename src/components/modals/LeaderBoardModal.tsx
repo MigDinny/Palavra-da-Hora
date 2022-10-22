@@ -66,7 +66,7 @@ export const LeaderBoardModal = ({
 
     // component was opened
     useEffect(() => {
-        isOpen && updateLeaderBoard();
+        if (isOpen) updateLeaderBoard();
     }, [isOpen, updateLeaderBoard]);
 
     let position = 1;
