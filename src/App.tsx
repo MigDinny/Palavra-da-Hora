@@ -348,6 +348,7 @@ function App() {
 				<MonthlyLeaderBoardModal
 					isOpen={isMonthlyLeaderBoardModalOpen}
 					handleClose={() => setIsMonthlyLeaderBoardModalOpen(false)}
+					name={name}
 				/>
 
 				<StatsModal
