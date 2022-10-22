@@ -54,7 +54,7 @@ export const MonthlyLeaderBoardModal = ({
             }
 
             // sort by points
-            let ordered_scores = unordered_scores?.sort();
+            let ordered_scores = unordered_scores?.sort((a, b) => (a.points < b.points ? 1 : -1));
 
             setScores(ordered_scores);
         }
