@@ -62,6 +62,7 @@ function App() {
 		useAlert()
 	const [currentGuess, setCurrentGuess] = useState('')
 	const [isGameWon, setIsGameWon] = useState(false)
+	const [pointsEarned, setPointsEarned] = useState(0)
 	const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -91,7 +92,7 @@ function App() {
 		}
 		if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
 			setIsGameLost(true)
-			showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+			showErrorAlert(CORRECT_WORD_MESSAGE(solution, 0), {
 				persist: true,
 			})
 		}
@@ -124,6 +125,7 @@ function App() {
 		const monthID = (today.getMonth() + 1) + '' + today.getFullYear()
 
 		const bonusPoints = BONUS_POINTS_ARRAY[lost ? 7 : attempts];
+		setPointsEarned(bonusPoints);
 
 		const reqConfig = {
 			url: 'https://palavra-da-hora-default-rtdb.europe-west1.firebasedatabase.app/scores/' + wordID + ".json",
@@ -248,7 +250,7 @@ function App() {
 	useEffect(() => {
 		if (isGameWon) {
 			const winMessage =
-				WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+				WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)] + ", +" + pointsEarned + " pts!"
 			const delayMs = REVEAL_TIME_MS * solution.length
 
 			showSuccessAlert(winMessage, {
@@ -262,7 +264,7 @@ function App() {
 				setIsStatsModalOpen(true)
 			}, (solution.length + 1) * REVEAL_TIME_MS)
 		}
-	}, [isGameWon, isGameLost, showSuccessAlert])
+	}, [isGameWon, isGameLost, showSuccessAlert, pointsEarned])
 
 	const onChar = (value: string) => {
 		if (
@@ -337,7 +339,7 @@ function App() {
 				sendScoreToServer(solutionIndex, guesses.length + 1, name, true);
 				setStats(addStatsForCompletedGame(stats, guesses.length + 1))
 				setIsGameLost(true)
-				showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+				showErrorAlert(CORRECT_WORD_MESSAGE(solution, -100), {
 					persist: true,
 					delayMs: REVEAL_TIME_MS * solution.length + 1,
 				})
