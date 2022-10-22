@@ -1,5 +1,7 @@
 import {
+  CalendarIcon,
   ChartBarIcon,
+  ChartPieIcon,
   CogIcon,
   InformationCircleIcon
 } from '@heroicons/react/outline'
@@ -10,13 +12,16 @@ type Props = {
   setIsStatsModalOpen: (value: boolean) => void
   setIsSettingsModalOpen: (value: boolean) => void
   setIsLeaderBoardModalOpen: (value: boolean) => void
+  setIsMonthlyLeaderBoardModalOpen: (value: boolean) => void
+
 }
 
 export const Navbar = ({
   setIsInfoModalOpen,
   setIsStatsModalOpen,
   setIsSettingsModalOpen,
-  setIsLeaderBoardModalOpen
+  setIsLeaderBoardModalOpen,
+  setIsMonthlyLeaderBoardModalOpen
 }: Props) => {
   return (
     <div className="navbar">
@@ -30,11 +35,15 @@ export const Navbar = ({
             className="h-6 w-6 mr-3 cursor-pointer dark:stroke-white"
             onClick={() => setIsLeaderBoardModalOpen(true)}
           />
+          <CalendarIcon
+            className="h-6 w-6 mr-3 cursor-pointer dark:stroke-white"
+            onClick={() => setIsMonthlyLeaderBoardModalOpen(true)}
+          />
         </div>
 
         <p className="text-xl ml-2.5 font-bold dark:text-white">{GAME_TITLE}</p>
         <div className="right-icons">
-          <ChartBarIcon
+          <ChartPieIcon
             className="h-6 w-6 mr-3 cursor-pointer dark:stroke-white"
             onClick={() => setIsStatsModalOpen(true)}
           />
