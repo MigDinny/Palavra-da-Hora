@@ -5,6 +5,7 @@ import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
 import { LeaderBoardModal } from './components/modals/LeaderBoardModal'
+import { MonthlyLeaderBoardModal } from './components/modals/MonthlyLeaderBoardModal'
 import {
 	WIN_MESSAGES,
 	GAME_COPIED_MESSAGE,
@@ -20,6 +21,7 @@ import {
 	REVEAL_TIME_MS,
 	WELCOME_INFO_MODAL_MS,
 	DISCOURAGE_INAPP_BROWSERS,
+	BONUS_POINTS_ARRAY
 } from './constants/settings'
 import {
 	isWordInWordList,
@@ -47,6 +49,8 @@ import { Navbar } from './components/navbar/Navbar'
 import { isInAppBrowser } from './lib/browser'
 import useHTTP from './hooks/use-http'
 
+
+
 function App() {
 	const prefersDarkMode = window.matchMedia(
 		'(prefers-color-scheme: dark)'
@@ -58,10 +62,12 @@ function App() {
 		useAlert()
 	const [currentGuess, setCurrentGuess] = useState('')
 	const [isGameWon, setIsGameWon] = useState(false)
+	const [pointsEarned, setPointsEarned] = useState(0)
 	const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 	const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 	const [isLeaderBoardModalOpen, setIsLeaderBoardModalOpen] = useState(false)
+	const [isMonthlyLeaderBoardModalOpen, setIsMonthlyLeaderBoardModalOpen] = useState(false)
 	const [currentRowClass, setCurrentRowClass] = useState('')
 	const [isGameLost, setIsGameLost] = useState(false)
 	const [isDarkMode, setIsDarkMode] = useState(
@@ -86,7 +92,7 @@ function App() {
 		}
 		if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
 			setIsGameLost(true)
-			showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+			showErrorAlert(CORRECT_WORD_MESSAGE(solution, 0), {
 				persist: true,
 			})
 		}
@@ -107,9 +113,19 @@ function App() {
 		sendRequest: sendScore
 	} = useHTTP();
 
-	const sendScoreToServer = (wordID: number, attempts: number, name: string) => {
-		let today = new Date()
-		let time = today.getHours() + ":" + (today.getMinutes() < 10 ? '0' : '') + today.getMinutes()
+	const {
+		//isLoading: isGetMonthlyScoreLoading,
+		error: getMonthlyScoreError,
+		sendRequest: getMonthlyScore
+	} = useHTTP();
+
+	const sendScoreToServer = (wordID: number, attempts: number, name: string, lost = false) => {
+		const today = new Date()
+		const time = today.getHours() + ":" + (today.getMinutes() < 10 ? '0' : '') + today.getMinutes()
+		const monthID = (today.getMonth() + 1) + '' + today.getFullYear()
+
+		const bonusPoints = BONUS_POINTS_ARRAY[lost ? 7 : attempts];
+		setPointsEarned(bonusPoints);
 
 		const reqConfig = {
 			url: 'https://palavra-da-hora-default-rtdb.europe-west1.firebasedatabase.app/scores/' + wordID + ".json",
@@ -123,6 +139,32 @@ function App() {
 		};
 
 		sendScore(reqConfig, () => { });
+
+		const reqGetLatestScoreConfig = {
+			url: 'https://palavra-da-hora-default-rtdb.europe-west1.firebasedatabase.app/monthly-scores/' + monthID + '/' + name + ".json",
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+
+		getMonthlyScore(reqGetLatestScoreConfig, (data: any) => {
+			let currentPoints = 0;
+			if (data != null && typeof (data) === 'number') {
+				currentPoints = data;
+			}
+
+			const newPoints = currentPoints + bonusPoints;
+
+			const reqPatchNewPoints = {
+				url: 'https://palavra-da-hora-default-rtdb.europe-west1.firebasedatabase.app/monthly-scores/' + monthID + ".json",
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: {
+					[name]: newPoints
+				}
+			};
+
+			sendScore(reqPatchNewPoints, () => { });
+		});
 	}
 
 	useEffect(() => {
@@ -208,7 +250,7 @@ function App() {
 	useEffect(() => {
 		if (isGameWon) {
 			const winMessage =
-				WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+				WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)] + ", +" + pointsEarned + " pts!"
 			const delayMs = REVEAL_TIME_MS * solution.length
 
 			showSuccessAlert(winMessage, {
@@ -222,7 +264,7 @@ function App() {
 				setIsStatsModalOpen(true)
 			}, (solution.length + 1) * REVEAL_TIME_MS)
 		}
-	}, [isGameWon, isGameLost, showSuccessAlert])
+	}, [isGameWon, isGameLost, showSuccessAlert, pointsEarned])
 
 	const onChar = (value: string) => {
 		if (
@@ -294,10 +336,10 @@ function App() {
 			}
 
 			if (guesses.length === MAX_CHALLENGES - 1) {
-				sendScoreToServer(solutionIndex, guesses.length + 1, name);
+				sendScoreToServer(solutionIndex, guesses.length + 1, name, true);
 				setStats(addStatsForCompletedGame(stats, guesses.length + 1))
 				setIsGameLost(true)
-				showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+				showErrorAlert(CORRECT_WORD_MESSAGE(solution, -100), {
 					persist: true,
 					delayMs: REVEAL_TIME_MS * solution.length + 1,
 				})
@@ -312,6 +354,7 @@ function App() {
 				setIsStatsModalOpen={setIsStatsModalOpen}
 				setIsSettingsModalOpen={setIsSettingsModalOpen}
 				setIsLeaderBoardModalOpen={setIsLeaderBoardModalOpen}
+				setIsMonthlyLeaderBoardModalOpen={setIsMonthlyLeaderBoardModalOpen}
 			/>
 			<div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
 				<div className="pb-6 grow">
@@ -340,6 +383,12 @@ function App() {
 					isOpen={isLeaderBoardModalOpen}
 					handleClose={() => setIsLeaderBoardModalOpen(false)}
 					wordID={solutionIndex}
+				/>
+
+				<MonthlyLeaderBoardModal
+					isOpen={isMonthlyLeaderBoardModalOpen}
+					handleClose={() => setIsMonthlyLeaderBoardModalOpen(false)}
+					name={name}
 				/>
 
 				<StatsModal
