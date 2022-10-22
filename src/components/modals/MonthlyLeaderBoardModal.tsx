@@ -56,7 +56,6 @@ export const MonthlyLeaderBoardModal = ({
 
             // sort by points
             let ordered_scores = unordered_scores?.sort();
-            console.log(ordered_scores);
 
             setScores(ordered_scores);
         }
@@ -78,7 +77,6 @@ export const MonthlyLeaderBoardModal = ({
 
     const currentMonth = new Date().toLocaleString('en-us', { month: 'long' });
     const currentYear = new Date().getFullYear();
-    console.log(scores);
     const ownScore = scores.find(s => s.name === name);
 
     const ownScoreContent = (!ownScore) ?
